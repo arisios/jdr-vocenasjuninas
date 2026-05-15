@@ -4,6 +4,7 @@ import api from '../utils/api';
 import { compressImage, validateVideo, isVideo } from '../utils/compress';
 import Bandeirinhas from '../components/Bandeirinhas';
 import LoadingSpinner from '../components/LoadingSpinner';
+import WalletBadge from '../components/WalletBadge';
 
 const CATEGORIES = [
   { id: 'forro',     emoji: '💃', label: 'Forró' },
@@ -94,6 +95,7 @@ export default function Home({ onSuccess }) {
   return (
     <div className="min-h-screen bg-juninas flex flex-col">
       <Bandeirinhas />
+      <div className="flex justify-end px-4 pt-2"><WalletBadge /></div>
 
       {/* Progress */}
       {step > 0 && (

@@ -11,7 +11,14 @@ import LoadingSpinner from './components/LoadingSpinner';
 function AdminRoute({ children }) {
   const { user, loading } = useAuth();
   if (loading) return <div className="min-h-screen bg-juninas flex items-center justify-center"><LoadingSpinner size="lg" /></div>;
-  if (!user || user.role !== 'admin') return <Navigate to="/admin/login" replace />;
+  if (!user || user.role !== 'admin') return <Navigate to="/login" replace />;
+  return children;
+}
+
+function PrivateRoute({ children }) {
+  const { user, loading } = useAuth();
+  if (loading) return <div className="min-h-screen bg-juninas flex items-center justify-center"><LoadingSpinner size="lg" /></div>;
+  if (!user) return <Navigate to="/login" replace />;
   return children;
 }
 
@@ -22,8 +29,9 @@ function AppContent() {
 
   return (
     <Routes>
-      <Route path="/" element={<Home onSuccess={(data) => setSuccess(data)} />} />
-      <Route path="/admin/login" element={<AuthPage />} />
+      <Route path="/" element={<PrivateRoute><Home onSuccess={(data) => setSuccess(data)} /></PrivateRoute>} />
+      <Route path="/login" element={<AuthPage />} />
+      <Route path="/admin/login" element={<Navigate to="/login" replace />} />
       <Route path="/admin" element={<AdminRoute><AdminPanel /></AdminRoute>} />
       <Route path="*" element={<Navigate to="/" replace />} />
     </Routes>
