@@ -3,6 +3,8 @@ const multer = require('multer');
 const path = require('path');
 const fs = require('fs');
 const { getDb, CATEGORIES } = require('../database/db');
+const { optionalAuth } = require('../middleware/auth');
+const { emitirMoedas } = require('../../../../shared/wallet-emit');
 
 const router = express.Router();
 
@@ -30,7 +32,7 @@ const upload = multer({
 router.get('/categories', (req, res) => res.json({ categories: CATEGORIES }));
 
 // Upload público (sem login obrigatório)
-router.post('/', upload.single('file'), (req, res) => {
+router.post('/', optionalAuth, upload.single('file'), (req, res) => {
   if (!req.file) return res.status(400).json({ error: 'Arquivo não enviado' });
 
   const { instagram, name, category, event_name, auth_repost, auth_mention, auth_promo } = req.body;
@@ -61,6 +63,8 @@ router.post('/', upload.single('file'), (req, res) => {
     auth_mention ? 1 : 0,
     auth_promo ? 1 : 0
   );
+
+  if (req.user?.id) emitirMoedas(req.user.id, 'vocenasjuninas_upload');
 
   res.status(201).json({
     upload: { id: result.lastInsertRowid, instagram: handle, category, file_type: fileType },
